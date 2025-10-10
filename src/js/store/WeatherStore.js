@@ -1,4 +1,3 @@
-// src/js/store/WeatherStore.js
 import { weatherService } from '../api/weatherService.js';
 
 export class WeatherStore {

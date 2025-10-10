@@ -1,4 +1,3 @@
-// src/js/api/weatherService.js
 export class WeatherService {
     constructor() {
         this.baseURL = import.meta.env.VITE_API_BASE_URL;
