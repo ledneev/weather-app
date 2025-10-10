@@ -1,6 +1,7 @@
 import { weatherStore } from "./store/WeatherStore.js";
 import { WeatherCard } from "./components/WeatherCard.js";
 import { SearchForm } from "./components/SearchForm.js";
+import { BriefForecast } from "./components/BriefForecast.js";
 
 class WeatherApp {
   constructor() {
@@ -12,11 +13,15 @@ class WeatherApp {
     console.log("🌤️ Weather App инициализируется...");
 
     this.components.searchForm = new SearchForm(
-      document.getElementById("search-container") 
+      document.getElementById("search-container")
     );
 
     this.components.weatherCard = new WeatherCard(
       document.getElementById("weather-container")
+    );
+
+    this.components.briefForecast = new BriefForecast(
+      document.getElementById("brief-forecast-container")
     );
 
     this.unsubscribeStore = weatherStore.subscribe(

@@ -1,4 +1,5 @@
 import { weatherStore } from "../store/WeatherStore";
+import { weatherService } from "../api/weatherService.js";
 
 export class WeatherCard {
   constructor(container) {
@@ -27,7 +28,11 @@ export class WeatherCard {
     this.elements.city = document.createElement("h2");
     this.elements.city.className = "wether-card__city";
 
+    this.elements.time = document.createElement("div");
+    this.elements.time.className = "weather-card__time";
+
     this.elements.header.appendChild(this.elements.city);
+    this.elements.header.appendChild(this.elements.time);
 
     this.elements.main = document.createElement("div");
     this.elements.main.className = "weather-card__main";
@@ -104,11 +109,19 @@ export class WeatherCard {
   }
 
   renderWeather(weather, units) {
+    const temp = Math.round(
+      weatherStore.convertTemperature(weather.main.temp, units)
+    );
+    const feelsLike = Math.round(
+      weatherStore.convertTemperature(weather.main.feels_like, units)
+    );
     const unitSymbol = units === "metric" ? "°C" : "°F";
-    const temp = Math.round(weather.main.temp);
-    const feelsLike = Math.round(weather.main.feels_like);
 
     this.elements.city.textContent = `${weather.name}, ${weather.sys.country}`;
+
+    this.elements.time.textContent = weatherService.getLocalTime(weather);
+    this.elements.time.title = weatherService.formatLocalTimeFull(weather);
+
     this.elements.temperature.textContent = `${temp}${unitSymbol}`;
     this.elements.icon.src = `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`;
     this.elements.icon.alt = weather.weather[0].description;
@@ -123,26 +136,87 @@ export class WeatherCard {
     }`;
 
     this.elements.card.style.display = "block";
+
+    this.startTimeUpdate(weather);
+  }
+  startTimeUpdate(weatherData) {
+    if (this.timeUpdateInterval) {
+      clearInterval(this.timeUpdateInterval);
+    }
+
+    const timezoneOffset = weatherData.timezone;
+
+    // Первоначальное обновление
+    this.updateCityTime(timezoneOffset);
+
+    // Интервал для обновлений
+    this.timeUpdateInterval = setInterval(() => {
+      this.updateCityTime(timezoneOffset);
+    }, 1000);
   }
 
-    renderLoading() {
-        this.elements.card.style.display = 'none';
-        // TODO добавить скелетон-загрузчик
+  updateCityTime(timezoneOffset) {
+    if (!this.elements.time) return;
+
+    try {
+      const now = new Date();
+      const utcTime = now.getTime() + now.getTimezoneOffset() * 60000;
+      const cityTime = new Date(utcTime + timezoneOffset * 1000);
+
+      this.elements.time.textContent = this.formatTime(cityTime);
+      this.elements.time.title = this.formatTimeFull(cityTime);
+    } catch (error) {
+      console.error("Time update error:", error);
+      this.elements.time.textContent = "--:--";
+    }
+  }
+
+  formatTime(date) {
+    return date.toLocaleTimeString("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  }
+
+  formatTimeFull(date) {
+    const dateStr = date.toLocaleDateString("ru-RU", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const timeStr = date.toLocaleTimeString("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    return `${dateStr}, ${timeStr}`;
+  }
+
+  renderLoading() {
+    this.elements.card.style.display = "none";
+    // TODO добавить скелетон-загрузчик
+  }
+
+  renderError(error) {
+    this.elements.card.style.display = "none";
+    // TODO сообщение об ошибке
+  }
+
+  renderEmpty() {
+    this.elements.card.style.display = "none";
+    // TODO cообщение "Введите город для поиска"
+  }
+
+  destroy() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
     }
 
-    renderError(error) {
-        this.elements.card.style.display = 'none';
-        // TODO сообщение об ошибке
+    if (this.timeUpdateInterval) {
+      clearInterval(this.timeUpdateInterval);
     }
-
-    renderEmpty() {
-        this.elements.card.style.display = 'none';
-        // TODO cообщение "Введите город для поиска"
-    }
-
-    destroy() {
-        if (this.unsubscribe) {
-            this.unsubscribe();
-        }
-    }
+  }
 }
