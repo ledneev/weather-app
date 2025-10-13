@@ -17,6 +17,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: var(--space-4);
+    align-items: start; 
 }
 
 .brief-forecast__day {

@@ -16,7 +16,7 @@ export class WeatherCard {
     this.render(weatherStore.getState());
   }
 
-  createStructure() {
+createStructure() {
     this.container.innerHTML = "";
 
     this.elements.card = document.createElement("div");
@@ -26,13 +26,23 @@ export class WeatherCard {
     this.elements.header.className = "weather-card__header";
 
     this.elements.city = document.createElement("h2");
-    this.elements.city.className = "wether-card__city";
+    this.elements.city.className = "weather-card__city";
 
     this.elements.time = document.createElement("div");
     this.elements.time.className = "weather-card__time";
 
+    this.elements.favoriteButton = document.createElement('button');
+    this.elements.favoriteButton.type = 'button';
+    this.elements.favoriteButton.className = 'weather-card__favorite-btn';
+    this.elements.favoriteButton.title = 'Добавить в избранное';
+    this.elements.favoriteButton.innerHTML = '☆';
+    this.elements.favoriteButton.addEventListener("click", () => {
+      this.toggleFavorite();
+    });
+
     this.elements.header.appendChild(this.elements.city);
     this.elements.header.appendChild(this.elements.time);
+    this.elements.header.appendChild(this.elements.favoriteButton);
 
     this.elements.main = document.createElement("div");
     this.elements.main.className = "weather-card__main";
@@ -61,9 +71,7 @@ export class WeatherCard {
     this.elements.toggleUnitsBtn = document.createElement("button");
     this.elements.toggleUnitsBtn.className = "weather-card__toggle-units";
     this.elements.toggleUnitsBtn.type = "button";
-    this.elements.toggleUnitsBtn.addEventListener("click", () => {
-      weatherStore.toggleUnits();
-    });
+    this.elements.toggleUnitsBtn.textContent = "Переключить единицы";
 
     this.elements.actions.appendChild(this.elements.toggleUnitsBtn);
 
@@ -73,7 +81,7 @@ export class WeatherCard {
     this.elements.card.appendChild(this.elements.actions);
 
     this.container.appendChild(this.elements.card);
-  }
+}
 
   createDetailItem(key, label) {
     const item = document.createElement("div");
@@ -108,6 +116,22 @@ export class WeatherCard {
     }
   }
 
+
+
+
+  toggleFavorite() {
+    const { currentWeather } = weatherStore.getState();
+    if (currentWeather) {
+      if (weatherStore.isFavorite(currentWeather)) {
+        weatherStore.removeFromFavorites(
+          `${currentWeather.name}-${currentWeather.sys.country}`
+        );
+      } else {
+        weatherStore.addToFavorites(currentWeather);
+      }
+    }
+  }
+
   renderWeather(weather, units) {
     const temp = Math.round(
       weatherStore.convertTemperature(weather.main.temp, units)
@@ -135,8 +159,13 @@ export class WeatherCard {
       units === "metric" ? "°F" : "°C"
     }`;
 
-    this.elements.card.style.display = "block";
+    const isFavorite = weatherStore.isFavorite(weather);
+    this.elements.favoriteButton.innerHTML = isFavorite ? "⭐" : "☆";
+    this.elements.favoriteButton.title = isFavorite
+      ? "Удалить из избранного"
+      : "Добавить в избранное";
 
+    this.elements.card.style.display = "block";
     this.startTimeUpdate(weather);
   }
   startTimeUpdate(weatherData) {

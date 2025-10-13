@@ -5,13 +5,13 @@
 }
 
 .brief-forecast__day-details {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1; 
+    grid-row: 2; 
     background: var(--bg-secondary);
     border-radius: var(--radius-md);
     padding: var(--space-4);
-    margin-top: var(--space-2);
     animation: slideDown 0.3s ease;
-    overflow-x: auto; 
+    margin-top: 0; 
 }
 
 .brief-forecast__hours {
@@ -45,8 +45,6 @@
     text-align: center;
     padding: var(--space-3);
     background: var(--bg-primary);
-    /* border-radius: var(--radius-md); */
-    /* border: 1px solid var(--border-color); */
     min-width: 0;
     transition: transform 0.2s, box-shadow 0.2s;
 }

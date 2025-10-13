@@ -2,6 +2,7 @@ import { weatherStore } from "./store/WeatherStore.js";
 import { WeatherCard } from "./components/WeatherCard.js";
 import { SearchForm } from "./components/SearchForm.js";
 import { BriefForecast } from "./components/BriefForecast.js";
+import { FavoriteCities } from './components/FavoriteCities.js';
 
 class WeatherApp {
   constructor() {
@@ -18,6 +19,10 @@ class WeatherApp {
 
     this.components.weatherCard = new WeatherCard(
       document.getElementById("weather-container")
+    );
+
+    this.components.favoriteCities = new FavoriteCities(
+      document.getElementById("favorite-cities-container")
     );
 
     this.components.briefForecast = new BriefForecast(

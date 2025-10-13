@@ -42,6 +42,12 @@ export class SearchForm {
     this.elements.button.innerHTML = "🔍";
     this.elements.button.title = "Найти погоду";
 
+    this.elements.geoButton = document.createElement("button");
+    this.elements.geoButton.type = "button";
+    this.elements.geoButton.className = "search-form__geo-button";
+    this.elements.geoButton.innerHTML = "📍";
+    this.elements.geoButton.title = "Моё местоположение";
+
     this.elements.loading = document.createElement("div");
     this.elements.loading.className = "search-form__loading";
     this.elements.loading.innerHTML = "⏳";
@@ -51,6 +57,7 @@ export class SearchForm {
     this.elements.error.className = "search-form__error";
     this.elements.error.style.display = "none";
 
+    this.elements.inputGroup.appendChild(this.elements.geoButton);
     this.elements.inputGroup.appendChild(this.elements.input);
     this.elements.inputGroup.appendChild(this.elements.button);
     this.elements.inputGroup.appendChild(this.elements.loading);
@@ -64,6 +71,10 @@ export class SearchForm {
   bindEvents() {
     this.elements.form.addEventListener("submit", this.handleSubmit.bind(this));
     this.elements.input.addEventListener("input", this.handleInput.bind(this));
+    this.elements.geoButton.addEventListener(
+      "click",
+      this.handleGeolocation.bind(this)
+    );
     this.unsubscribe = weatherStore.subscribe(
       this.handleStoreUpdate.bind(this)
     );
@@ -99,6 +110,14 @@ export class SearchForm {
       this.saveToHistory(state.currentWeather.name);
       this.clearInput();
     }
+  }
+  handleGeolocation() {
+    this.setLoading(true);
+    this.hideError();
+
+    weatherStore.fetchWeatherByGeolocation().finally(() => {
+      this.setLoading(false);
+    });
   }
 
   async searchWeather(city) {
@@ -142,11 +161,13 @@ export class SearchForm {
     if (this.isLoading) {
       this.elements.button.disabled = true;
       this.elements.input.disabled = true;
+      this.elements.geoButton.disabled = true;
       this.elements.loading.style.display = "block";
       this.elements.button.style.display = "none";
     } else {
       this.elements.button.disabled = false;
       this.elements.input.disabled = false;
+      this.elements.geoButton.disabled = false;
       this.elements.loading.style.display = "none";
       this.elements.button.style.display = "block";
     }

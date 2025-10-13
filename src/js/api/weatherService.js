@@ -21,6 +21,26 @@ export class WeatherService {
   }
 
   /**
+   * Получает погоду по координатам (геолокация)
+   */
+
+  async getWeatherByCoords(lat, lon) {
+    const url = `${this.baseURL}/weather?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric&lang=ru`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return await response.json();
+  }
+
+  async getCityByCoords(lat, lon) {
+    const weather = await this.getWeatherByCoords(lat, lon);
+    return weather.name;
+  }
+
+  /**
    * КРАТКИЙ прогноз - для главной страницы (группировка по дням)
    */
   async getBriefForecast(city, days = 5) {
@@ -213,26 +233,26 @@ export class WeatherService {
     });
   }
 
-getLocalTime(cityData) {
+  getLocalTime(cityData) {
     if (!cityData || cityData.timezone === undefined) {
-        return "--:--";
+      return "--:--";
     }
 
     try {
-        const now = new Date();
-        const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
-        const cityTime = new Date(utcTime + (cityData.timezone * 1000));
-        
-        return cityTime.toLocaleTimeString("ru-RU", {
-            hour: "2-digit",
-            minute: "2-digit", 
-            second: "2-digit",
-        });
+      const now = new Date();
+      const utcTime = now.getTime() + now.getTimezoneOffset() * 60000;
+      const cityTime = new Date(utcTime + cityData.timezone * 1000);
+
+      return cityTime.toLocaleTimeString("ru-RU", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
     } catch (error) {
-        console.error("Time calculation error:", error);
-        return "--:--";
+      console.error("Time calculation error:", error);
+      return "--:--";
     }
-}
+  }
   /**
    * Полное время с датой
    */
