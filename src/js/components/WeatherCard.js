@@ -1,5 +1,6 @@
 import { weatherStore } from "../store/WeatherStore";
 import { weatherService } from "../api/weatherService.js";
+import { Icon } from "./Icon.js";
 
 export class WeatherCard {
   constructor(container) {
@@ -16,7 +17,7 @@ export class WeatherCard {
     this.render(weatherStore.getState());
   }
 
-createStructure() {
+  createStructure() {
     this.container.innerHTML = "";
 
     this.elements.card = document.createElement("div");
@@ -31,11 +32,11 @@ createStructure() {
     this.elements.time = document.createElement("div");
     this.elements.time.className = "weather-card__time";
 
-    this.elements.favoriteButton = document.createElement('button');
-    this.elements.favoriteButton.type = 'button';
-    this.elements.favoriteButton.className = 'weather-card__favorite-btn';
-    this.elements.favoriteButton.title = 'Добавить в избранное';
-    this.elements.favoriteButton.innerHTML = '☆';
+    this.elements.favoriteButton = document.createElement("button");
+    this.elements.favoriteButton.type = "button";
+    this.elements.favoriteButton.className = "weather-card__favorite-btn";
+    this.elements.favoriteButton.title = "Добавить в избранное";
+    this.elements.favoriteButton.innerHTML = "☆";
     this.elements.favoriteButton.addEventListener("click", () => {
       this.toggleFavorite();
     });
@@ -72,6 +73,9 @@ createStructure() {
     this.elements.toggleUnitsBtn.className = "weather-card__toggle-units";
     this.elements.toggleUnitsBtn.type = "button";
     this.elements.toggleUnitsBtn.textContent = "Переключить единицы";
+    this.elements.toggleUnitsBtn.addEventListener("click", () => {
+      weatherStore.toggleUnits();
+    });
 
     this.elements.actions.appendChild(this.elements.toggleUnitsBtn);
 
@@ -81,7 +85,7 @@ createStructure() {
     this.elements.card.appendChild(this.elements.actions);
 
     this.container.appendChild(this.elements.card);
-}
+  }
 
   createDetailItem(key, label) {
     const item = document.createElement("div");
@@ -115,9 +119,6 @@ createStructure() {
       this.renderEmpty();
     }
   }
-
-
-
 
   toggleFavorite() {
     const { currentWeather } = weatherStore.getState();
@@ -160,7 +161,13 @@ createStructure() {
     }`;
 
     const isFavorite = weatherStore.isFavorite(weather);
-    this.elements.favoriteButton.innerHTML = isFavorite ? "⭐" : "☆";
+    this.elements.favoriteButton.innerHTML = "";
+    this.elements.favoriteButton.appendChild(
+      Icon.create(isFavorite ? "favorite" : "favorite-outline", {
+        size: 20,
+        className: "weather-card__favorite-icon",
+      })
+    );
     this.elements.favoriteButton.title = isFavorite
       ? "Удалить из избранного"
       : "Добавить в избранное";

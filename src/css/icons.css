@@ -1,0 +1,34 @@
+.icon {
+    display: inline-block;
+    vertical-align: middle;
+    fill: currentColor;
+}
+
+.search-form__geo-icon {
+    color: var(--text-secondary);
+    transition: color 0.2s;
+}
+
+.search-form__geo-button:hover:not(:disabled) .search-form__geo-icon {
+    color: white;
+}
+
+.search-form__search-icon {
+    color: white;
+}
+
+.favorite-city__load-icon {
+    color: white;
+    width: 16px;
+    height: 16px;
+}
+
+.favorite-city__remove-icon {
+    color: red;
+    width: 16px;
+    height: 16px;
+}
+
+.favorite-city__remove-btn:hover .favorite-city__remove-icon {
+    color: white;
+}

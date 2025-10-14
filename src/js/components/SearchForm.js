@@ -1,4 +1,5 @@
 import { weatherStore } from "../store/WeatherStore";
+import { Icon } from "./Icon.js";
 
 export class SearchForm {
   constructor(container) {
@@ -39,13 +40,25 @@ export class SearchForm {
     this.elements.button = document.createElement("button");
     this.elements.button.type = "submit";
     this.elements.button.className = "search-form__button";
-    this.elements.button.innerHTML = "🔍";
+    this.elements.button.innerHTML = "";
+    this.elements.button.appendChild(
+      Icon.create("search", {
+        size: 18,
+        className: "search-form__search-icon",
+      })
+    );
     this.elements.button.title = "Найти погоду";
 
     this.elements.geoButton = document.createElement("button");
     this.elements.geoButton.type = "button";
     this.elements.geoButton.className = "search-form__geo-button";
-    this.elements.geoButton.innerHTML = "📍";
+    this.elements.geoButton.innerHTML = "";
+    this.elements.geoButton.appendChild(
+      Icon.create("location", {
+        size: 20,
+        className: "search-form__geo-icon",
+      })
+    );
     this.elements.geoButton.title = "Моё местоположение";
 
     this.elements.loading = document.createElement("div");

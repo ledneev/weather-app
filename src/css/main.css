@@ -1,7 +1,8 @@
 @import './variables.css';
 @import './base.css';
+@import './icons.css';
 @import './components/weather-card.css';
 @import './components/search-form.css';
 @import './components/brief-forecast.css';
 @import './components/ui-kit/brief-forecast-ui.css';
-@import './components/favorite-cities.css'
+@import './components/favorite-cities.css';
